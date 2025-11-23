@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
-import { Camera, Plus, X, Clock, Trash2 } from 'lucide-react';
+import { Camera, Plus, X, Clock, Trash2, Loader2 } from 'lucide-react';
 import { Recipe, Category, Ingredient, Step } from '../types';
+import { compressImage, needsCompression, getImageSizeKB } from '../utils/imageCompress';
 
 interface RecipeFormProps {
   initialRecipe?: Recipe | null;
@@ -16,6 +17,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSave, o
   const [category, setCategory] = useState<Category>(initialRecipe?.category || Category.BREAKFAST);
   const [image, setImage] = useState<string>(initialRecipe?.image || '');
   const [prepTime, setPrepTime] = useState(initialRecipe?.prepTime || '');
+  const [isCompressing, setIsCompressing] = useState(false);
   
   const [ingredients, setIngredients] = useState<Ingredient[]>(
     initialRecipe?.ingredients || [{ id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, text: '' }]
@@ -25,9 +27,48 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSave, o
     initialRecipe?.steps || [{ id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, text: '' }]
   );
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
+    if (!file) return;
+
+    // 检查文件类型
+    if (!file.type.startsWith('image/')) {
+      alert('请选择图片文件');
+      return;
+    }
+
+    // 如果图片需要压缩（大于 500KB），进行压缩
+    if (needsCompression(file, 500)) {
+      setIsCompressing(true);
+      try {
+        const originalSizeKB = getImageSizeKB(file);
+        console.log(`原始图片大小: ${originalSizeKB.toFixed(2)} KB，开始压缩...`);
+        
+        const compressedImage = await compressImage(file, {
+          maxWidth: 1200,
+          maxHeight: 1200,
+          quality: 0.8,
+          maxSizeKB: 300  // 压缩到 300KB 以下
+        });
+        
+        const compressedSizeKB = (compressedImage.length * 3) / 4 / 1024;
+        console.log(`压缩后大小: ${compressedSizeKB.toFixed(2)} KB`);
+        
+        setImage(compressedImage);
+      } catch (error) {
+        console.error('图片压缩失败:', error);
+        alert('图片压缩失败，请尝试选择较小的图片');
+        // 如果压缩失败，仍然尝试使用原图（但可能会超出存储限制）
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImage(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      } finally {
+        setIsCompressing(false);
+      }
+    } else {
+      // 图片较小，直接使用
       const reader = new FileReader();
       reader.onloadend = () => {
         setImage(reader.result as string);
@@ -117,9 +158,14 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSave, o
       {/* Image Upload Section */}
       <div 
         className="relative w-full h-64 bg-gray-200 flex items-center justify-center overflow-hidden cursor-pointer group"
-        onClick={() => fileInputRef.current?.click()}
+        onClick={() => !isCompressing && fileInputRef.current?.click()}
       >
-        {image ? (
+        {isCompressing ? (
+          <div className="flex flex-col items-center text-morandi-primary">
+            <Loader2 size={48} className="mb-2 opacity-50 animate-spin" />
+            <span className="text-sm font-medium opacity-70">正在压缩图片...</span>
+          </div>
+        ) : image ? (
           <img src={image} alt="Preview" className="w-full h-full object-cover" />
         ) : (
           <div className="flex flex-col items-center text-morandi-primary">
@@ -127,13 +173,16 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSave, o
             <span className="text-sm font-medium opacity-70">Add Cover Photo</span>
           </div>
         )}
-        <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors" />
+        {!isCompressing && (
+          <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors" />
+        )}
         <input 
           ref={fileInputRef}
           type="file" 
           accept="image/*" 
           className="hidden" 
-          onChange={handleImageUpload} 
+          onChange={handleImageUpload}
+          disabled={isCompressing}
         />
       </div>
 

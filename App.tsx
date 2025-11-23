@@ -8,27 +8,19 @@ import { RecipeForm } from './components/RecipeForm';
 import { RecipeDetail } from './components/RecipeDetail';
 import { CategoryFilter } from './components/CategoryFilter';
 import { Header } from './components/Header';
+import { 
+  loadRecipes, 
+  saveRecipes, 
+  isIndexedDBAvailable, 
+  migrateFromLocalStorage,
+  isMigratedFromLocalStorage,
+  getStorageUsage
+} from './utils/indexedDB';
 
 const App: React.FC = () => {
-  // Initialize from LocalStorage or fall back to constants
-  const [recipes, setRecipes] = useState<Recipe[]>(() => {
-    try {
-      // 检查 localStorage 是否可用
-      if (typeof Storage !== 'undefined' && localStorage) {
-        const saved = localStorage.getItem('morandi-recipes');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          // 验证解析后的数据是否为数组
-          if (Array.isArray(parsed)) {
-            return parsed;
-          }
-        }
-      }
-    } catch (e) {
-      console.error('Failed to load recipes from localStorage:', e);
-    }
-    return INITIAL_RECIPES;
-  });
+  // Initialize recipes state - will be loaded from IndexedDB or localStorage
+  const [recipes, setRecipes] = useState<Recipe[]>(INITIAL_RECIPES);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [view, setView] = useState<ViewState>('HOME');
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
@@ -36,25 +28,113 @@ const App: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<Category | 'All'>('All');
   const [installPrompt, setInstallPrompt] = useState<any>(null);
 
-  // Save to LocalStorage whenever recipes change
+  // Load recipes from IndexedDB on mount
   useEffect(() => {
-    try {
-      // 检查 localStorage 是否可用
-      if (typeof Storage !== 'undefined' && localStorage) {
-        const dataToSave = JSON.stringify(recipes);
-        // 检查数据大小（localStorage 通常限制为 5-10MB）
-        if (dataToSave.length > 5 * 1024 * 1024) {
-          console.warn('Recipe data is too large to save to localStorage');
-          return;
+    const loadInitialRecipes = async () => {
+      try {
+        if (isIndexedDBAvailable()) {
+          // 尝试从 IndexedDB 加载
+          const dbRecipes = await loadRecipes();
+          
+          if (dbRecipes.length > 0) {
+            setRecipes(dbRecipes);
+            setIsLoading(false);
+            return;
+          }
+          
+          // 如果 IndexedDB 为空，尝试从 localStorage 迁移
+          if (!isMigratedFromLocalStorage()) {
+            const migratedRecipes = await migrateFromLocalStorage();
+            if (migratedRecipes.length > 0) {
+              setRecipes(migratedRecipes);
+              setIsLoading(false);
+              return;
+            }
+          }
         }
-        localStorage.setItem('morandi-recipes', dataToSave);
+        
+        // 如果 IndexedDB 不可用，回退到 localStorage
+        if (typeof Storage !== 'undefined' && localStorage) {
+          const saved = localStorage.getItem('morandi-recipes');
+          if (saved) {
+            try {
+              const parsed = JSON.parse(saved);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                setRecipes(parsed);
+                setIsLoading(false);
+                return;
+              }
+            } catch (e) {
+              console.error('Failed to parse localStorage data:', e);
+            }
+          }
+        }
+        
+        // 使用初始数据
+        setRecipes(INITIAL_RECIPES);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Failed to load recipes:', error);
+        setRecipes(INITIAL_RECIPES);
+        setIsLoading(false);
       }
-    } catch (error) {
-      // 捕获可能的错误（如配额超出、权限问题等）
-      console.error('Failed to save recipes to localStorage:', error);
-      // 不抛出错误，避免应用崩溃
-    }
-  }, [recipes]);
+    };
+
+    loadInitialRecipes();
+  }, []);
+
+  // Save to IndexedDB whenever recipes change
+  useEffect(() => {
+    // 跳过初始加载时的保存
+    if (isLoading) return;
+
+    const saveRecipesData = async () => {
+      try {
+        if (isIndexedDBAvailable()) {
+          await saveRecipes(recipes);
+          
+          // 显示存储使用情况（仅当数据较大时）
+          const usage = await getStorageUsage();
+          if (usage.estimatedSizeMB > 1) {
+            console.log(`已保存 ${usage.recipes} 个配方到 IndexedDB，大小: ${usage.estimatedSizeMB} MB`);
+          }
+        } else {
+          // 回退到 localStorage（如果 IndexedDB 不可用）
+          if (typeof Storage !== 'undefined' && localStorage) {
+            const dataToSave = JSON.stringify(recipes);
+            const sizeMB = dataToSave.length / 1024 / 1024;
+            
+            if (sizeMB > 4) {
+              console.warn(`Recipe data is too large (${sizeMB.toFixed(2)} MB) to save to localStorage. Max size: 4 MB`);
+              console.warn('建议：使用支持 IndexedDB 的浏览器');
+            }
+            
+            localStorage.setItem('morandi-recipes', dataToSave);
+          }
+        }
+      } catch (error: any) {
+        console.error('Failed to save recipes:', error);
+        
+        // 如果是配额错误，提供更友好的提示
+        if (error?.name === 'QuotaExceededError' || error?.code === 22) {
+          console.error('存储空间不足！建议：删除一些配方或使用较小的图片');
+        }
+        
+        // 尝试回退到 localStorage
+        try {
+          if (typeof Storage !== 'undefined' && localStorage) {
+            const dataToSave = JSON.stringify(recipes);
+            localStorage.setItem('morandi-recipes', dataToSave);
+            console.log('已回退到 localStorage 存储');
+          }
+        } catch (fallbackError) {
+          console.error('回退到 localStorage 也失败:', fallbackError);
+        }
+      }
+    };
+
+    saveRecipesData();
+  }, [recipes, isLoading]);
 
   // Listen for PWA install prompt
   useEffect(() => {
