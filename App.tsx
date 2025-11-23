@@ -314,13 +314,18 @@ const App: React.FC = () => {
         )}
       </div>
 
-      {/* Floating Action Button */}
+      {/* Floating Action Button - Fixed to viewport */}
       <button
         onClick={() => {
           setSelectedRecipe(null);
           setView('CREATE');
         }}
-        className="absolute bottom-6 right-6 w-14 h-14 bg-morandi-primary text-white rounded-full shadow-lg shadow-morandi-primary/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-30"
+        className="fixed bottom-6 right-6 w-14 h-14 bg-morandi-primary text-white rounded-full shadow-lg shadow-morandi-primary/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-50"
+        style={{
+          // 确保在移动设备上也有足够的边距
+          bottom: '1.5rem',
+          right: '1.5rem'
+        }}
       >
         <Plus size={28} />
       </button>
