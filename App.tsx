@@ -229,7 +229,7 @@ const App: React.FC = () => {
 
   if (view === 'CREATE' || view === 'EDIT') {
     return (
-      <div className="max-w-md mx-auto bg-morandi-bg min-h-screen shadow-2xl overflow-hidden relative">
+      <div className="max-w-md mx-auto bg-morandi-bg shadow-2xl overflow-hidden relative flex flex-col" style={{ height: '100dvh' }}>
         <Header 
           title={view === 'CREATE' ? t('recipeForm.newRecipe') : t('recipeForm.editRecipe')} 
           onBack={() => setView(selectedRecipe ? 'DETAIL' : 'HOME')}
@@ -245,7 +245,7 @@ const App: React.FC = () => {
 
   if (view === 'DETAIL' && selectedRecipe) {
     return (
-      <div className="max-w-md mx-auto bg-morandi-surface min-h-screen shadow-2xl overflow-hidden relative">
+      <div className="max-w-md mx-auto bg-morandi-surface shadow-2xl overflow-hidden relative flex flex-col" style={{ height: '100dvh' }}>
         <RecipeDetail 
           recipe={selectedRecipe}
           onEdit={handleEditClick}
@@ -258,7 +258,7 @@ const App: React.FC = () => {
 
   // HOME VIEW
   return (
-    <div className="max-w-md mx-auto bg-morandi-bg min-h-screen shadow-2xl overflow-hidden relative flex flex-col">
+    <div className="max-w-md mx-auto bg-morandi-bg shadow-2xl overflow-hidden relative flex flex-col" style={{ height: '100dvh' }}>
       
       {/* Top Bar */}
       <div className="bg-morandi-bg pt-4 px-4 pb-2">

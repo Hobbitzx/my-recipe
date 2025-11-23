@@ -26,7 +26,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onEdit, onDe
   };
 
   return (
-    <div className="bg-morandi-surface min-h-screen flex flex-col relative">
+    <div className="bg-morandi-surface h-full flex flex-col relative" style={{ height: '100dvh' }}>
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowDeleteConfirm(false)}>
