@@ -25,7 +25,7 @@ const routes = [
     path: '/recipe/:id/edit',
     name: 'RecipeEdit',
     component: RecipeForm,
-    props: (route) => ({ isEdit: true, recipeId: route.params.id }),
+    props: (route: { params: { id: any; }; }) => ({ isEdit: true, recipeId: route.params.id }),
   },
 ];
 
