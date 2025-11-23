@@ -2,12 +2,13 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Search, Plus, ChefHat, Download } from 'lucide-react';
 import { Recipe, Category, ViewState } from './types';
-import { INITIAL_RECIPES } from './constants';
 import { RecipeCard } from './components/RecipeCard';
 import { RecipeForm } from './components/RecipeForm';
 import { RecipeDetail } from './components/RecipeDetail';
 import { CategoryFilter } from './components/CategoryFilter';
 import { Header } from './components/Header';
+import { LanguageSwitcher } from './components/LanguageSwitcher';
+import { useLanguage } from './contexts/LanguageContext';
 import { 
   loadRecipes, 
   saveRecipes, 
@@ -18,8 +19,11 @@ import {
 } from './utils/indexedDB';
 
 const App: React.FC = () => {
+  const { t } = useLanguage();
+  
   // Initialize recipes state - will be loaded from IndexedDB or localStorage
-  const [recipes, setRecipes] = useState<Recipe[]>(INITIAL_RECIPES);
+  // 初始化为空数组，新用户首次进入时没有样例数据
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const [view, setView] = useState<ViewState>('HOME');
@@ -70,12 +74,13 @@ const App: React.FC = () => {
           }
         }
         
-        // 使用初始数据
-        setRecipes(INITIAL_RECIPES);
+        // 如果没有找到任何数据，使用空数组（新用户）
+        setRecipes([]);
         setIsLoading(false);
       } catch (error) {
         console.error('Failed to load recipes:', error);
-        setRecipes(INITIAL_RECIPES);
+        // 加载失败时也使用空数组
+        setRecipes([]);
         setIsLoading(false);
       }
     };
@@ -226,7 +231,7 @@ const App: React.FC = () => {
     return (
       <div className="max-w-md mx-auto bg-morandi-bg min-h-screen shadow-2xl overflow-hidden relative">
         <Header 
-          title={view === 'CREATE' ? 'New Recipe' : 'Edit Recipe'} 
+          title={view === 'CREATE' ? t('recipeForm.newRecipe') : t('recipeForm.editRecipe')} 
           onBack={() => setView(selectedRecipe ? 'DETAIL' : 'HOME')}
         />
         <RecipeForm 
@@ -259,22 +264,20 @@ const App: React.FC = () => {
       <div className="bg-morandi-bg pt-4 px-4 pb-2">
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h1 className="text-2xl font-serif font-bold text-morandi-text">My Recipes</h1>
-            <p className="text-xs text-morandi-subtext">What are we cooking today?</p>
+            <h1 className="text-2xl font-serif font-bold text-morandi-text">{t('home.title')}</h1>
+            <p className="text-xs text-morandi-subtext">{t('home.subtitle')}</p>
           </div>
           <div className="flex gap-2">
             {installPrompt && (
               <button 
                 onClick={handleInstall}
                 className="w-10 h-10 rounded-full bg-morandi-primary text-white flex items-center justify-center shadow-sm hover:bg-opacity-90 transition-all"
-                title="Install App"
+                title={t('home.installApp')}
               >
                 <Download size={20} />
               </button>
             )}
-            <div className="w-10 h-10 rounded-full bg-morandi-surface border border-morandi-border flex items-center justify-center text-morandi-primary shadow-sm">
-              <ChefHat size={20} />
-            </div>
+            <LanguageSwitcher />
           </div>
         </div>
 
@@ -283,7 +286,7 @@ const App: React.FC = () => {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
           <input
             type="text"
-            placeholder="Search recipes..."
+            placeholder={t('home.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full bg-white pl-10 pr-4 py-3 rounded-xl shadow-sm text-sm text-morandi-text focus:ring-2 focus:ring-morandi-primary/20 outline-none transition-all placeholder-gray-300"
@@ -299,7 +302,7 @@ const App: React.FC = () => {
         {filteredRecipes.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 text-morandi-subtext opacity-60">
             <ChefHat size={48} className="mb-2" />
-            <p>No recipes found.</p>
+            <p>{t('home.noRecipes')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-4">

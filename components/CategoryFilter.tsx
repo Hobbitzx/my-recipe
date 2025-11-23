@@ -1,12 +1,26 @@
 import React from 'react';
 import { Category } from '../types';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface CategoryFilterProps {
   selectedCategory: Category | 'All';
   onSelect: (category: Category | 'All') => void;
 }
 
+const categoryMap: Record<string, string> = {
+  'All': 'categories.all',
+  [Category.QUICK_BREAKFAST]: 'categories.quickBreakfast',
+  [Category.COLD_DISHES]: 'categories.coldDishes',
+  [Category.MEAT_MAIN]: 'categories.meatMain',
+  [Category.RICE_NOODLES]: 'categories.riceNoodles',
+  [Category.SOUP]: 'categories.soup',
+  [Category.VEGETABLE_STIR]: 'categories.vegetableStir',
+  [Category.DESSERT]: 'categories.dessert',
+  [Category.DRINKS]: 'categories.drinks',
+};
+
 export const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategory, onSelect }) => {
+  const { t } = useLanguage();
   const categories = [
     'All',
     ...Object.values(Category).filter(c => c !== 'All')
@@ -25,7 +39,7 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategory
               : 'bg-morandi-surface text-morandi-text border border-morandi-border shadow-sm hover:bg-gray-50'}
           `}
         >
-          {cat}
+          {t(categoryMap[cat] || cat)}
         </button>
       ))}
     </div>

@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Camera, Plus, X, Clock, Trash2, Loader2 } from 'lucide-react';
 import { Recipe, Category, Ingredient, Step } from '../types';
 import { compressImage, needsCompression, getImageSizeKB } from '../utils/imageCompress';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface RecipeFormProps {
   initialRecipe?: Recipe | null;
@@ -10,11 +11,12 @@ interface RecipeFormProps {
 }
 
 export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSave, onCancel }) => {
+  const { t } = useLanguage();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [title, setTitle] = useState(initialRecipe?.title || '');
   const [description, setDescription] = useState(initialRecipe?.description || '');
-  const [category, setCategory] = useState<Category>(initialRecipe?.category || Category.BREAKFAST);
+  const [category, setCategory] = useState<Category>(initialRecipe?.category || Category.QUICK_BREAKFAST);
   const [image, setImage] = useState<string>(initialRecipe?.image || '');
   const [prepTime, setPrepTime] = useState(initialRecipe?.prepTime || '');
   const [isCompressing, setIsCompressing] = useState(false);
@@ -33,7 +35,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSave, o
 
     // 检查文件类型
     if (!file.type.startsWith('image/')) {
-      alert('请选择图片文件');
+      alert(t('errors.imageCompressFailed'));
       return;
     }
 
@@ -60,7 +62,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSave, o
         setImage(compressedImage);
       } catch (error) {
         console.error('图片压缩失败:', error);
-        alert('图片压缩失败，请尝试选择较小的图片');
+        alert(t('errors.imageCompressFailed'));
         // 如果压缩失败，仍然尝试使用原图（但可能会超出存储限制）
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -166,14 +168,14 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSave, o
         {isCompressing ? (
           <div className="flex flex-col items-center text-morandi-primary">
             <Loader2 size={48} className="mb-2 opacity-50 animate-spin" />
-            <span className="text-sm font-medium opacity-70">正在压缩图片...</span>
+            <span className="text-sm font-medium opacity-70">{t('recipeForm.compressing')}</span>
           </div>
         ) : image ? (
           <img src={image} alt="Preview" className="w-full h-full object-cover" />
         ) : (
           <div className="flex flex-col items-center text-morandi-primary">
             <Camera size={48} className="mb-2 opacity-50" />
-            <span className="text-sm font-medium opacity-70">Add Cover Photo</span>
+            <span className="text-sm font-medium opacity-70">{t('recipeForm.addCoverPhoto')}</span>
           </div>
         )}
         {!isCompressing && (
@@ -196,7 +198,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSave, o
           <div className="space-y-4">
             <input
               type="text"
-              placeholder="Recipe Title"
+              placeholder={t('recipeForm.recipeTitle')}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="w-full text-2xl font-serif font-bold text-morandi-text placeholder-gray-300 border-b border-transparent focus:border-morandi-primary focus:outline-none bg-transparent transition-all"
@@ -204,7 +206,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSave, o
             
             <div className="flex gap-4">
               <div className="flex-1">
-                <label className="block text-xs font-bold text-morandi-subtext uppercase mb-1 tracking-wider">Category</label>
+                <label className="block text-xs font-bold text-morandi-subtext uppercase mb-1 tracking-wider">{t('recipeForm.category')}</label>
                 <select 
                   value={category} 
                   onChange={(e) => setCategory(e.target.value as Category)}
@@ -216,14 +218,14 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSave, o
                 </select>
               </div>
               <div className="flex-1">
-                <label className="block text-xs font-bold text-morandi-subtext uppercase mb-1 tracking-wider">Time</label>
+                <label className="block text-xs font-bold text-morandi-subtext uppercase mb-1 tracking-wider">{t('recipeForm.time')}</label>
                 <div className="relative">
                   <Clock size={16} className="absolute left-2.5 top-2.5 text-morandi-accent" />
                   <input 
                     type="text" 
                     value={prepTime}
                     onChange={(e) => setPrepTime(e.target.value)}
-                    placeholder="e.g. 30 min"
+                    placeholder={t('recipeForm.timePlaceholder')}
                     className="w-full p-2 pl-9 rounded-lg bg-morandi-bg text-morandi-text text-sm border-none focus:ring-1 focus:ring-morandi-primary outline-none"
                   />
                 </div>
@@ -231,7 +233,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSave, o
             </div>
 
             <textarea
-              placeholder="Add a short description..."
+              placeholder={t('recipeForm.descriptionPlaceholder')}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
@@ -241,7 +243,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSave, o
 
           {/* Ingredients */}
           <div>
-            <h3 className="text-lg font-semibold text-morandi-text mb-3">Ingredients</h3>
+            <h3 className="text-lg font-semibold text-morandi-text mb-3">{t('recipeForm.ingredients')}</h3>
             <div className="space-y-2">
               {ingredients.map((ing) => (
                 <div key={ing.id} className="flex gap-2 items-center animate-fade-in">
@@ -250,7 +252,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSave, o
                     type="text"
                     value={ing.text}
                     onChange={(e) => handleIngredientChange(ing.id, e.target.value)}
-                    placeholder="Add ingredient"
+                    placeholder={t('recipeForm.ingredientPlaceholder')}
                     className="flex-grow p-2 bg-transparent border-b border-morandi-border focus:border-morandi-primary focus:outline-none text-sm text-morandi-text"
                   />
                   <button onClick={() => removeIngredient(ing.id)} className="text-gray-300 hover:text-red-400">
@@ -263,13 +265,13 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSave, o
               onClick={handleAddIngredient}
               className="mt-3 text-sm font-medium text-morandi-primary hover:text-morandi-text flex items-center gap-1"
             >
-              <Plus size={16} /> Add Ingredient
+              <Plus size={16} /> {t('recipeForm.addIngredient')}
             </button>
           </div>
 
           {/* Steps */}
           <div>
-            <h3 className="text-lg font-semibold text-morandi-text mb-3">Instructions</h3>
+            <h3 className="text-lg font-semibold text-morandi-text mb-3">{t('recipeForm.instructions')}</h3>
             <div className="space-y-4">
               {steps.map((step, index) => (
                 <div key={step.id} className="flex gap-3 animate-fade-in">
@@ -279,7 +281,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSave, o
                   <textarea
                     value={step.text}
                     onChange={(e) => handleStepChange(step.id, e.target.value)}
-                    placeholder="Describe this step..."
+                    placeholder={t('recipeForm.stepPlaceholder')}
                     rows={2}
                     className="flex-grow p-2 bg-morandi-bg/50 rounded-lg text-sm text-morandi-text focus:bg-white focus:ring-1 focus:ring-morandi-primary outline-none transition-colors"
                   />
@@ -293,7 +295,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSave, o
               onClick={handleAddStep}
               className="mt-3 text-sm font-medium text-morandi-primary hover:text-morandi-text flex items-center gap-1"
             >
-              <Plus size={16} /> Add Step
+              <Plus size={16} /> {t('recipeForm.addStep')}
             </button>
           </div>
 
@@ -303,13 +305,13 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSave, o
               onClick={onCancel}
               className="flex-1 py-3 rounded-xl font-semibold text-morandi-text bg-morandi-bg hover:bg-gray-200 transition-colors"
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button 
               onClick={handleSubmit}
               className="flex-1 py-3 rounded-xl font-semibold text-white bg-morandi-primary hover:opacity-90 transition-opacity shadow-md shadow-morandi-primary/30"
             >
-              Save Recipe
+              {t('recipeForm.saveRecipe')}
             </button>
           </div>
 

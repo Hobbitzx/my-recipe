@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Clock, Edit2, Trash2, CheckCircle2, ChefHat, ArrowLeft } from 'lucide-react';
 import { Recipe } from '../types';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface RecipeDetailProps {
   recipe: Recipe;
@@ -10,6 +11,7 @@ interface RecipeDetailProps {
 }
 
 export const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onEdit, onDelete, onBack }) => {
+  const { t, tf } = useLanguage();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handleDeleteClick = (e: React.MouseEvent) => {
@@ -36,22 +38,22 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onEdit, onDe
                 <div className="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-4">
                   <Trash2 size={24} />
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">Delete Recipe?</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">{t('recipeDetail.deleteConfirm')}</h3>
                 <p className="text-sm text-gray-500 mb-6">
-                  Are you sure you want to delete "{recipe.title}"? This action cannot be undone.
+                  {tf('recipeDetail.deleteMessage', { title: recipe.title })}
                 </p>
                 <div className="flex gap-3 w-full">
                   <button 
                     onClick={() => setShowDeleteConfirm(false)}
                     className="flex-1 py-3 rounded-xl font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors"
                   >
-                    Cancel
+                    {t('common.cancel')}
                   </button>
                   <button 
                     onClick={confirmDelete}
                     className="flex-1 py-3 rounded-xl font-semibold text-white bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/30 transition-colors"
                   >
-                    Delete
+                    {t('common.delete')}
                   </button>
                 </div>
              </div>
@@ -87,7 +89,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onEdit, onDe
             <button 
               onClick={handleDeleteClick}
               className="p-2 bg-white/20 backdrop-blur-md rounded-full text-red-100 hover:bg-red-500 hover:text-white transition-colors group"
-              title="Delete Recipe"
+              title={t('recipeDetail.deleteRecipe')}
             >
               <Trash2 size={20} className="group-hover:scale-110 transition-transform" />
             </button>
@@ -117,9 +119,9 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onEdit, onDe
             <div className="bg-morandi-primary/10 p-2 rounded-lg text-morandi-primary">
               <ChefHat size={20} />
             </div>
-            <h2 className="text-xl font-semibold text-morandi-text">Ingredients</h2>
+            <h2 className="text-xl font-semibold text-morandi-text">{t('recipeDetail.ingredients')}</h2>
             <span className="text-xs text-morandi-subtext bg-morandi-bg px-2 py-1 rounded-full ml-auto">
-              {recipe.ingredients.length} items
+              {recipe.ingredients.length} {t('recipeDetail.items')}
             </span>
           </div>
           
@@ -139,14 +141,14 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onEdit, onDe
             <div className="bg-morandi-secondary/20 p-2 rounded-lg text-morandi-text">
               <CheckCircle2 size={20} />
             </div>
-            <h2 className="text-xl font-semibold text-morandi-text">Directions</h2>
+            <h2 className="text-xl font-semibold text-morandi-text">{t('recipeDetail.directions')}</h2>
           </div>
           
           <div className="space-y-6 pl-2">
             {recipe.steps.map((step, index) => (
               <div key={step.id} className="relative pl-8 pb-2 border-l-2 border-morandi-border last:border-0">
                 <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-morandi-secondary border-2 border-white shadow-sm" />
-                <h3 className="text-xs font-bold text-morandi-primary uppercase mb-1 tracking-wide">Step {index + 1}</h3>
+                <h3 className="text-xs font-bold text-morandi-primary uppercase mb-1 tracking-wide">{t('recipeDetail.step')} {index + 1}</h3>
                 <p className="text-morandi-text leading-relaxed">{step.text}</p>
               </div>
             ))}
