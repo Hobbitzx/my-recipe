@@ -63,9 +63,12 @@ export async function saveRecipes(recipes: Recipe[]): Promise<void> {
     });
 
     // 批量添加新数据
+    // 需要深拷贝并序列化数据，移除 Vue 响应式代理
     const promises = recipes.map(recipe => {
+      // 使用 JSON 序列化/反序列化来移除 Vue 响应式代理
+      const serializedRecipe = JSON.parse(JSON.stringify(recipe)) as Recipe;
       return new Promise<void>((resolve, reject) => {
-        const request = store.add(recipe);
+        const request = store.add(serializedRecipe);
         request.onsuccess = () => resolve();
         request.onerror = () => reject(request.error);
       });
