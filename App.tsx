@@ -13,11 +13,21 @@ const App: React.FC = () => {
   // Initialize from LocalStorage or fall back to constants
   const [recipes, setRecipes] = useState<Recipe[]>(() => {
     try {
-      const saved = localStorage.getItem('morandi-recipes');
-      return saved ? JSON.parse(saved) : INITIAL_RECIPES;
+      // 检查 localStorage 是否可用
+      if (typeof Storage !== 'undefined' && localStorage) {
+        const saved = localStorage.getItem('morandi-recipes');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          // 验证解析后的数据是否为数组
+          if (Array.isArray(parsed)) {
+            return parsed;
+          }
+        }
+      }
     } catch (e) {
-      return INITIAL_RECIPES;
+      console.error('Failed to load recipes from localStorage:', e);
     }
+    return INITIAL_RECIPES;
   });
 
   const [view, setView] = useState<ViewState>('HOME');
@@ -28,7 +38,22 @@ const App: React.FC = () => {
 
   // Save to LocalStorage whenever recipes change
   useEffect(() => {
-    localStorage.setItem('morandi-recipes', JSON.stringify(recipes));
+    try {
+      // 检查 localStorage 是否可用
+      if (typeof Storage !== 'undefined' && localStorage) {
+        const dataToSave = JSON.stringify(recipes);
+        // 检查数据大小（localStorage 通常限制为 5-10MB）
+        if (dataToSave.length > 5 * 1024 * 1024) {
+          console.warn('Recipe data is too large to save to localStorage');
+          return;
+        }
+        localStorage.setItem('morandi-recipes', dataToSave);
+      }
+    } catch (error) {
+      // 捕获可能的错误（如配额超出、权限问题等）
+      console.error('Failed to save recipes to localStorage:', error);
+      // 不抛出错误，避免应用崩溃
+    }
   }, [recipes]);
 
   // Listen for PWA install prompt
@@ -60,30 +85,37 @@ const App: React.FC = () => {
   };
 
   const handleSaveRecipe = (recipeData: Omit<Recipe, 'id' | 'createdAt'> & { id?: string; createdAt?: number }) => {
-    if (recipeData.id) {
-      // Update existing
-      setRecipes(prev => prev.map(r => {
-        if (r.id === recipeData.id) {
-          return {
-            ...r,
-            ...recipeData,
-            id: r.id, // 确保ID不被覆盖
-            createdAt: r.createdAt, // 保持原始创建时间
-          } as Recipe;
-        }
-        return r;
-      }));
-    } else {
-      // Create new
-      const newRecipe: Recipe = {
-        ...recipeData,
-        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        createdAt: Date.now(),
-      };
-      setRecipes(prev => [newRecipe, ...prev]);
+    try {
+      if (recipeData.id) {
+        // Update existing
+        setRecipes(prev => prev.map(r => {
+          if (r.id === recipeData.id) {
+            return {
+              ...r,
+              ...recipeData,
+              id: r.id, // 确保ID不被覆盖
+              createdAt: r.createdAt, // 保持原始创建时间
+            } as Recipe;
+          }
+          return r;
+        }));
+      } else {
+        // Create new
+        const newRecipe: Recipe = {
+          ...recipeData,
+          id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          createdAt: Date.now(),
+        };
+        setRecipes(prev => [newRecipe, ...prev]);
+      }
+      setView('HOME');
+      setSelectedRecipe(null);
+    } catch (error) {
+      console.error('Error saving recipe:', error);
+      // 即使保存失败，也返回主页，避免用户卡在表单页面
+      setView('HOME');
+      setSelectedRecipe(null);
     }
-    setView('HOME');
-    setSelectedRecipe(null);
   };
 
   const handleDeleteRecipe = (id: string) => {
