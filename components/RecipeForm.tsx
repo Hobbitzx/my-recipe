@@ -37,22 +37,25 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSave, o
       return;
     }
 
-    // 如果图片需要压缩（大于 500KB），进行压缩
-    if (needsCompression(file, 500)) {
+    // 如果图片需要压缩（大于 800KB），进行高质量压缩
+    if (needsCompression(file, 800)) {
       setIsCompressing(true);
       try {
         const originalSizeKB = getImageSizeKB(file);
-        console.log(`原始图片大小: ${originalSizeKB.toFixed(2)} KB，开始压缩...`);
+        console.log(`原始图片大小: ${originalSizeKB.toFixed(2)} KB，开始高质量压缩...`);
         
         const compressedImage = await compressImage(file, {
-          maxWidth: 1200,
-          maxHeight: 1200,
-          quality: 0.8,
-          maxSizeKB: 300  // 压缩到 300KB 以下
+          maxWidth: 1920,      // 提高分辨率限制
+          maxHeight: 1920,
+          quality: 0.95,       // 高质量（接近无损）
+          maxSizeKB: 800,      // 提高大小限制
+          preserveFormat: true, // 保持原始格式
+          lossless: false      // 使用有损但高质量压缩
         });
         
         const compressedSizeKB = (compressedImage.length * 3) / 4 / 1024;
-        console.log(`压缩后大小: ${compressedSizeKB.toFixed(2)} KB`);
+        const compressionRatio = ((1 - compressedSizeKB / originalSizeKB) * 100).toFixed(1);
+        console.log(`压缩后大小: ${compressedSizeKB.toFixed(2)} KB (压缩率: ${compressionRatio}%)`);
         
         setImage(compressedImage);
       } catch (error) {
@@ -68,7 +71,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSave, o
         setIsCompressing(false);
       }
     } else {
-      // 图片较小，直接使用
+      // 图片较小，直接使用（不压缩）
       const reader = new FileReader();
       reader.onloadend = () => {
         setImage(reader.result as string);
