@@ -1,0 +1,7 @@
+{
+  "name": "Morandi Recipe",
+  "description": "A visually calming, elegant recipe manager featuring a Morandi color palette. Create, organize, and explore your culinary collection with a mobile-first design.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
