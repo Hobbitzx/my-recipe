@@ -16,7 +16,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSave, o
   
   const [title, setTitle] = useState(initialRecipe?.title || '');
   const [description, setDescription] = useState(initialRecipe?.description || '');
-  const [category, setCategory] = useState<Category>(initialRecipe?.category || Category.BREAKFAST);
+  const [category, setCategory] = useState<Category>(initialRecipe?.category || Category.QUICK_BREAKFAST);
   const [image, setImage] = useState<string>(initialRecipe?.image || '');
   const [prepTime, setPrepTime] = useState(initialRecipe?.prepTime || '');
   const [isCompressing, setIsCompressing] = useState(false);

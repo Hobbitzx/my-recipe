@@ -1,11 +1,13 @@
 export enum Category {
   ALL = 'All',
-  BREAKFAST = 'Breakfast',
-  LUNCH = 'Lunch',
-  DINNER = 'Dinner',
-  DESSERT = 'Dessert',
-  HEALTHY = 'Healthy',
-  DRINK = 'Drink'
+  QUICK_BREAKFAST = 'QuickBreakfast',      // 快手早餐
+  COLD_DISHES = 'ColdDishes',              // 冷盘凉菜
+  MEAT_MAIN = 'MeatMain',                  // 肉类主菜
+  RICE_NOODLES = 'RiceNoodles',            // 米面主食
+  SOUP = 'Soup',                           // 暖胃煲汤
+  VEGETABLE_STIR = 'VegetableStir',        // 素菜小炒
+  DESSERT = 'Dessert',                     // 甜品点心
+  DRINKS = 'Drinks'                        // 调酒饮料
 }
 
 export interface Ingredient {

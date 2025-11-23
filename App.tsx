@@ -17,17 +17,9 @@ import {
   isMigratedFromLocalStorage,
   getStorageUsage
 } from './utils/indexedDB';
-import { isStandalone } from './utils/pwa';
 
 const App: React.FC = () => {
   const { t } = useLanguage();
-  
-  // 检测PWA模式
-  const [isPWA, setIsPWA] = useState(false);
-  
-  useEffect(() => {
-    setIsPWA(isStandalone());
-  }, []);
   
   // Initialize recipes state - will be loaded from IndexedDB or localStorage
   // 初始化为空数组，新用户首次进入时没有样例数据
@@ -179,30 +171,30 @@ const App: React.FC = () => {
 
   const handleSaveRecipe = (recipeData: Omit<Recipe, 'id' | 'createdAt'> & { id?: string; createdAt?: number }) => {
     try {
-      if (recipeData.id) {
-        // Update existing
-        setRecipes(prev => prev.map(r => {
-          if (r.id === recipeData.id) {
-            return {
-              ...r,
-              ...recipeData,
-              id: r.id, // 确保ID不被覆盖
-              createdAt: r.createdAt, // 保持原始创建时间
-            } as Recipe;
-          }
-          return r;
-        }));
-      } else {
-        // Create new
-        const newRecipe: Recipe = {
-          ...recipeData,
-          id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-          createdAt: Date.now(),
-        };
-        setRecipes(prev => [newRecipe, ...prev]);
-      }
-      setView('HOME');
-      setSelectedRecipe(null);
+    if (recipeData.id) {
+      // Update existing
+      setRecipes(prev => prev.map(r => {
+        if (r.id === recipeData.id) {
+          return {
+            ...r,
+            ...recipeData,
+            id: r.id, // 确保ID不被覆盖
+            createdAt: r.createdAt, // 保持原始创建时间
+          } as Recipe;
+        }
+        return r;
+      }));
+    } else {
+      // Create new
+      const newRecipe: Recipe = {
+        ...recipeData,
+        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        createdAt: Date.now(),
+      };
+      setRecipes(prev => [newRecipe, ...prev]);
+    }
+    setView('HOME');
+    setSelectedRecipe(null);
     } catch (error) {
       console.error('Error saving recipe:', error);
       // 即使保存失败，也返回主页，避免用户卡在表单页面
@@ -237,7 +229,7 @@ const App: React.FC = () => {
 
   if (view === 'CREATE' || view === 'EDIT') {
     return (
-      <div className="max-w-md mx-auto bg-morandi-bg shadow-2xl overflow-hidden relative" style={isPWA ? { height: '100vh', minHeight: '100vh' } : { minHeight: '100vh' }}>
+      <div className="max-w-md mx-auto bg-morandi-bg min-h-screen shadow-2xl overflow-hidden relative">
         <Header 
           title={view === 'CREATE' ? t('recipeForm.newRecipe') : t('recipeForm.editRecipe')} 
           onBack={() => setView(selectedRecipe ? 'DETAIL' : 'HOME')}
@@ -253,7 +245,7 @@ const App: React.FC = () => {
 
   if (view === 'DETAIL' && selectedRecipe) {
     return (
-      <div className="max-w-md mx-auto bg-morandi-surface shadow-2xl overflow-hidden relative" style={isPWA ? { height: '100vh', minHeight: '100vh' } : { minHeight: '100vh' }}>
+      <div className="max-w-md mx-auto bg-morandi-surface min-h-screen shadow-2xl overflow-hidden relative">
         <RecipeDetail 
           recipe={selectedRecipe}
           onEdit={handleEditClick}
@@ -266,7 +258,7 @@ const App: React.FC = () => {
 
   // HOME VIEW
   return (
-    <div className="max-w-md mx-auto bg-morandi-bg shadow-2xl overflow-hidden relative flex flex-col" style={isPWA ? { height: '100vh', minHeight: '100vh' } : { minHeight: '100vh' }}>
+    <div className="max-w-md mx-auto bg-morandi-bg min-h-screen shadow-2xl overflow-hidden relative flex flex-col">
       
       {/* Top Bar */}
       <div className="bg-morandi-bg pt-4 px-4 pb-2">

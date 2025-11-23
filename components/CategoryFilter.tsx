@@ -9,12 +9,14 @@ interface CategoryFilterProps {
 
 const categoryMap: Record<string, string> = {
   'All': 'categories.all',
-  [Category.BREAKFAST]: 'categories.breakfast',
-  [Category.LUNCH]: 'categories.lunch',
-  [Category.DINNER]: 'categories.dinner',
+  [Category.QUICK_BREAKFAST]: 'categories.quickBreakfast',
+  [Category.COLD_DISHES]: 'categories.coldDishes',
+  [Category.MEAT_MAIN]: 'categories.meatMain',
+  [Category.RICE_NOODLES]: 'categories.riceNoodles',
+  [Category.SOUP]: 'categories.soup',
+  [Category.VEGETABLE_STIR]: 'categories.vegetableStir',
   [Category.DESSERT]: 'categories.dessert',
-  [Category.HEALTHY]: 'categories.healthy',
-  [Category.DRINK]: 'categories.drink',
+  [Category.DRINKS]: 'categories.drinks',
 };
 
 export const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategory, onSelect }) => {

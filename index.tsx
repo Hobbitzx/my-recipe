@@ -19,7 +19,7 @@ root.render(
   <React.StrictMode>
     <ErrorBoundary>
       <LanguageProvider>
-        <App />
+    <App />
       </LanguageProvider>
     </ErrorBoundary>
   </React.StrictMode>
