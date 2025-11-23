@@ -29,8 +29,8 @@ const routes = [
   },
 ];
 
-// 处理 base URL：当 base 是 './' 时，Vue Router 需要 '/'
-const baseUrl = import.meta.env.BASE_URL === './' ? '/' : import.meta.env.BASE_URL;
+// 使用环境变量中的 BASE_URL，对于 GitHub Pages 应该是 '/my-recipe/'
+const baseUrl = import.meta.env.BASE_URL || '/';
 
 const router = createRouter({
   history: createWebHistory(baseUrl),

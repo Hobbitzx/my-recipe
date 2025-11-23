@@ -6,20 +6,38 @@
     <script type="text/javascript">
       // GitHub Pages SPA 路由重定向
       // 将所有 404 请求重定向到 index.html，让 Vue Router 处理路由
-      var pathSegmentsToKeep = 0;
+      // 对于子路径 /my-recipe/，需要保留一个路径段
+      var pathSegmentsToKeep = 1; // 保留 /my-recipe/ 路径段
       var l = window.location;
-      l.replace(
-        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-        l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
-        l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
-        (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
-        l.hash
-      );
+      var path = l.pathname;
+      var segments = path.split('/').filter(Boolean);
+      
+      // 如果路径以 /my-recipe/ 开头，重定向到 /my-recipe/index.html
+      if (segments[0] === 'my-recipe') {
+        var redirectPath = '/my-recipe/';
+        if (segments.length > 1) {
+          redirectPath += '?/' + segments.slice(1).join('/').replace(/&/g, '~and~');
+        }
+        if (l.search) {
+          redirectPath += (redirectPath.includes('?') ? '&' : '?') + l.search.slice(1).replace(/&/g, '~and~');
+        }
+        redirectPath += l.hash;
+        l.replace(l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') + redirectPath);
+      } else {
+        // 兼容旧逻辑
+        l.replace(
+          l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+          l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
+          l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
+          (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+          l.hash
+        );
+      }
     </script>
   </head>
   <body>
     <noscript>
-      <meta http-equiv="refresh" content="0; url=./index.html">
+      <meta http-equiv="refresh" content="0; url=/my-recipe/index.html">
     </noscript>
   </body>
 </html>

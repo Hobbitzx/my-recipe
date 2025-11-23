@@ -3,7 +3,7 @@ import vue from '@vitejs/plugin-vue';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
-  base: './', // 使用相对路径，适配 GitHub Pages
+  base: '/my-recipe/', // GitHub Pages 仓库路径
   plugins: [
     vue(),
     VitePWA({
@@ -16,7 +16,7 @@ export default defineConfig({
         theme_color: '#F2F0EB',
         background_color: '#F2F0EB',
         display: 'standalone',
-        start_url: './', // 修改为相对路径
+        start_url: '/my-recipe/', // GitHub Pages 仓库路径
         orientation: 'portrait',
         icons: [
           {
