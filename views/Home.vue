@@ -53,7 +53,7 @@
 
     <!-- Floating Action Button -->
     <button
-      @click="$router.push('/recipe/new')"
+      @click="() => router.push('/recipe/new')"
       class="fixed bottom-6 right-6 w-14 h-14 bg-morandi-primary text-white rounded-full shadow-lg shadow-morandi-primary/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-50"
       style="bottom: 1.5rem; right: 1.5rem"
     >
@@ -106,7 +106,11 @@ const handleInstall = () => {
 };
 
 const handleRecipeClick = (recipe: Recipe) => {
-  router.push(`/recipe/${recipe.id}`);
+  const path = `/recipe/${recipe.id}`;
+  console.log('Navigating to:', path);
+  router.push(path).catch((err: any) => {
+    console.error('Navigation error:', err);
+  });
 };
 
 // 过滤食谱
