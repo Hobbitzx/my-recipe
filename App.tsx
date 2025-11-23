@@ -62,12 +62,22 @@ const App: React.FC = () => {
   const handleSaveRecipe = (recipeData: Omit<Recipe, 'id' | 'createdAt'> & { id?: string; createdAt?: number }) => {
     if (recipeData.id) {
       // Update existing
-      setRecipes(prev => prev.map(r => r.id === recipeData.id ? { ...r, ...recipeData } as Recipe : r));
+      setRecipes(prev => prev.map(r => {
+        if (r.id === recipeData.id) {
+          return {
+            ...r,
+            ...recipeData,
+            id: r.id, // 确保ID不被覆盖
+            createdAt: r.createdAt, // 保持原始创建时间
+          } as Recipe;
+        }
+        return r;
+      }));
     } else {
       // Create new
       const newRecipe: Recipe = {
         ...recipeData,
-        id: Date.now().toString(),
+        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         createdAt: Date.now(),
       };
       setRecipes(prev => [newRecipe, ...prev]);
@@ -78,8 +88,11 @@ const App: React.FC = () => {
 
   const handleDeleteRecipe = (id: string) => {
     setRecipes(prev => prev.filter(r => r.id !== id));
+    // 如果删除的是当前选中的recipe，需要清除状态
+    if (selectedRecipe?.id === id) {
+      setSelectedRecipe(null);
+    }
     setView('HOME');
-    setSelectedRecipe(null);
   };
 
   const handleEditClick = (recipe: Recipe) => {

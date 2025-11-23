@@ -18,11 +18,11 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSave, o
   const [prepTime, setPrepTime] = useState(initialRecipe?.prepTime || '');
   
   const [ingredients, setIngredients] = useState<Ingredient[]>(
-    initialRecipe?.ingredients || [{ id: Date.now().toString(), text: '' }]
+    initialRecipe?.ingredients || [{ id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, text: '' }]
   );
   
   const [steps, setSteps] = useState<Step[]>(
-    initialRecipe?.steps || [{ id: Date.now().toString(), text: '' }]
+    initialRecipe?.steps || [{ id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, text: '' }]
   );
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,7 +67,38 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSave, o
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Validation
-    if (!title.trim()) return alert("Title is required");
+    if (!title.trim()) {
+      // 使用更好的错误提示方式
+      const titleInput = document.querySelector('input[placeholder="Recipe Title"]') as HTMLInputElement;
+      if (titleInput) {
+        titleInput.focus();
+        titleInput.style.borderBottomColor = '#ef4444';
+        setTimeout(() => {
+          titleInput.style.borderBottomColor = '';
+        }, 2000);
+      }
+      return;
+    }
+    
+    const filteredIngredients = ingredients.filter(i => i.text.trim() !== '');
+    const filteredSteps = steps.filter(s => s.text.trim() !== '');
+    
+    // 验证至少有一个ingredient和step
+    if (filteredIngredients.length === 0) {
+      const firstIngredientInput = document.querySelector('input[placeholder="Add ingredient"]') as HTMLInputElement;
+      if (firstIngredientInput) {
+        firstIngredientInput.focus();
+      }
+      return;
+    }
+    
+    if (filteredSteps.length === 0) {
+      const firstStepTextarea = document.querySelector('textarea[placeholder="Describe this step..."]') as HTMLTextAreaElement;
+      if (firstStepTextarea) {
+        firstStepTextarea.focus();
+      }
+      return;
+    }
     
     onSave({
       ...(initialRecipe ? { id: initialRecipe.id, createdAt: initialRecipe.createdAt } : {}),
@@ -76,8 +107,8 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSave, o
       category,
       image: image || 'https://picsum.photos/800/600?random=99',
       prepTime: prepTime || '15 min',
-      ingredients: ingredients.filter(i => i.text.trim() !== ''),
-      steps: steps.filter(s => s.text.trim() !== '')
+      ingredients: filteredIngredients,
+      steps: filteredSteps
     });
   };
 

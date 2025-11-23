@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  base: './', // 使用相对路径，适配 GitHub Pages
   plugins: [
     react(),
     VitePWA({
@@ -15,7 +16,7 @@ export default defineConfig({
         theme_color: '#F2F0EB',
         background_color: '#F2F0EB',
         display: 'standalone',
-        start_url: '/',
+        start_url: './', // 修改为相对路径
         orientation: 'portrait',
         icons: [
           {
