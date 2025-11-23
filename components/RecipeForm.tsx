@@ -16,7 +16,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSave, o
   
   const [title, setTitle] = useState(initialRecipe?.title || '');
   const [description, setDescription] = useState(initialRecipe?.description || '');
-  const [category, setCategory] = useState<Category>(initialRecipe?.category || Category.QUICK_BREAKFAST);
+  const [category, setCategory] = useState<Category>(initialRecipe?.category || Category.BREAKFAST);
   const [image, setImage] = useState<string>(initialRecipe?.image || '');
   const [prepTime, setPrepTime] = useState(initialRecipe?.prepTime || '');
   const [isCompressing, setIsCompressing] = useState(false);
@@ -159,7 +159,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSave, o
   };
 
   return (
-    <div className="pb-24 bg-morandi-bg h-full flex-1 overflow-y-auto">
+    <div className="pb-24 bg-morandi-bg min-h-full">
       {/* Image Upload Section */}
       <div 
         className="relative w-full h-64 bg-gray-200 flex items-center justify-center overflow-hidden cursor-pointer group"

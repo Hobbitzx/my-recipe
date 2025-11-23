@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Clock, Edit2, Trash2, CheckCircle2, ChefHat, ArrowLeft } from 'lucide-react';
 import { Recipe } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
+import { isStandalone } from '../utils/pwa';
 
 interface RecipeDetailProps {
   recipe: Recipe;
@@ -13,6 +14,11 @@ interface RecipeDetailProps {
 export const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onEdit, onDelete, onBack }) => {
   const { t, tf } = useLanguage();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isPWA, setIsPWA] = useState(false);
+  
+  useEffect(() => {
+    setIsPWA(isStandalone());
+  }, []);
 
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -26,7 +32,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onEdit, onDe
   };
 
   return (
-    <div className="bg-morandi-surface h-full flex flex-col relative" style={{ height: '100dvh' }}>
+    <div className="bg-morandi-surface flex flex-col relative" style={isPWA ? { height: '100vh', minHeight: '100vh' } : { minHeight: '100vh' }}>
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowDeleteConfirm(false)}>

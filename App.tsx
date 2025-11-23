@@ -17,9 +17,17 @@ import {
   isMigratedFromLocalStorage,
   getStorageUsage
 } from './utils/indexedDB';
+import { isStandalone } from './utils/pwa';
 
 const App: React.FC = () => {
   const { t } = useLanguage();
+  
+  // 检测PWA模式
+  const [isPWA, setIsPWA] = useState(false);
+  
+  useEffect(() => {
+    setIsPWA(isStandalone());
+  }, []);
   
   // Initialize recipes state - will be loaded from IndexedDB or localStorage
   // 初始化为空数组，新用户首次进入时没有样例数据
@@ -229,7 +237,7 @@ const App: React.FC = () => {
 
   if (view === 'CREATE' || view === 'EDIT') {
     return (
-      <div className="max-w-md mx-auto bg-morandi-bg shadow-2xl overflow-hidden relative flex flex-col" style={{ height: '100dvh' }}>
+      <div className="max-w-md mx-auto bg-morandi-bg shadow-2xl overflow-hidden relative" style={isPWA ? { height: '100vh', minHeight: '100vh' } : { minHeight: '100vh' }}>
         <Header 
           title={view === 'CREATE' ? t('recipeForm.newRecipe') : t('recipeForm.editRecipe')} 
           onBack={() => setView(selectedRecipe ? 'DETAIL' : 'HOME')}
@@ -245,7 +253,7 @@ const App: React.FC = () => {
 
   if (view === 'DETAIL' && selectedRecipe) {
     return (
-      <div className="max-w-md mx-auto bg-morandi-surface shadow-2xl overflow-hidden relative flex flex-col" style={{ height: '100dvh' }}>
+      <div className="max-w-md mx-auto bg-morandi-surface shadow-2xl overflow-hidden relative" style={isPWA ? { height: '100vh', minHeight: '100vh' } : { minHeight: '100vh' }}>
         <RecipeDetail 
           recipe={selectedRecipe}
           onEdit={handleEditClick}
@@ -258,7 +266,7 @@ const App: React.FC = () => {
 
   // HOME VIEW
   return (
-    <div className="max-w-md mx-auto bg-morandi-bg shadow-2xl overflow-hidden relative flex flex-col" style={{ height: '100dvh' }}>
+    <div className="max-w-md mx-auto bg-morandi-bg shadow-2xl overflow-hidden relative flex flex-col" style={isPWA ? { height: '100vh', minHeight: '100vh' } : { minHeight: '100vh' }}>
       
       {/* Top Bar */}
       <div className="bg-morandi-bg pt-4 px-4 pb-2">

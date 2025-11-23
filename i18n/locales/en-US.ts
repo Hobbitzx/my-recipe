@@ -62,14 +62,12 @@ export const enUS = {
   // Categories
   categories: {
     all: 'All',
-    quickBreakfast: 'Quick Breakfast',
-    coldDishes: 'Cold Dishes',
-    meatMain: 'Meat Main',
-    riceNoodles: 'Rice & Noodles',
-    soup: 'Soup',
-    vegetableStir: 'Vegetable Stir-fry',
+    breakfast: 'Breakfast',
+    lunch: 'Lunch',
+    dinner: 'Dinner',
     dessert: 'Dessert',
-    drinks: 'Drinks',
+    healthy: 'Healthy',
+    drink: 'Drink',
   },
 
   // Errors

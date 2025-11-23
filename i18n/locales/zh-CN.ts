@@ -62,14 +62,12 @@ export const zhCN = {
   // 分类
   categories: {
     all: '全部',
-    quickBreakfast: '快手早餐',
-    coldDishes: '冷盘凉菜',
-    meatMain: '肉类主菜',
-    riceNoodles: '米面主食',
-    soup: '暖胃煲汤',
-    vegetableStir: '素菜小炒',
-    dessert: '甜品点心',
-    drinks: '调酒饮料',
+    breakfast: '早餐',
+    lunch: '午餐',
+    dinner: '晚餐',
+    dessert: '甜点',
+    healthy: '健康',
+    drink: '饮品',
   },
 
   // 错误信息
