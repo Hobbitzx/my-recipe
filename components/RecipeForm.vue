@@ -146,7 +146,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { Camera, Plus, X, Clock, Trash2, Loader2 } from 'lucide-vue-next';
 import { Recipe, Category, Ingredient, Step } from '../types';
 import { compressImage, needsCompression, getImageSizeKB } from '../utils/imageCompress';
@@ -165,7 +165,7 @@ const emit = defineEmits<{
 const { t } = useLanguage();
 const fileInputRef = ref<HTMLInputElement | null>(null);
 
-// 缺省图片路径
+// 缺省图片路径 - 使用 public 文件夹，路径固定不会被 hash
 const defaultImage = `${import.meta.env.BASE_URL}default-recipe-image.jpg`
 
 const title = ref(props.initialRecipe?.title || '');
