@@ -165,6 +165,9 @@ const emit = defineEmits<{
 const { t } = useLanguage();
 const fileInputRef = ref<HTMLInputElement | null>(null);
 
+// 缺省图片路径
+const defaultImage = `${import.meta.env.BASE_URL}default-recipe-image.jpg`
+
 const title = ref(props.initialRecipe?.title || '');
 const description = ref(props.initialRecipe?.description || '');
 const category = ref<Category>(props.initialRecipe?.category || Category.QUICK_BREAKFAST);
@@ -328,7 +331,7 @@ const handleSubmit = (e: Event) => {
     title: title.value,
     description: description.value,
     category: category.value,
-    image: image.value || 'https://picsum.photos/800/600?random=99',
+    image: image.value || defaultImage,
     prepTime: prepTime.value || '15 min',
     ingredients: filteredIngredients,
     steps: filteredSteps
