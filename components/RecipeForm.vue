@@ -64,8 +64,9 @@
           <textarea
             :placeholder="t('recipeForm.descriptionPlaceholder')"
             v-model="description"
+            @input="autoResizeTextarea($event.target as HTMLTextAreaElement)"
             rows="3"
-            class="w-full p-3 rounded-lg bg-morandi-bg text-morandi-text text-sm resize-none focus:ring-1 focus:ring-morandi-primary outline-none"
+            class="w-full p-3 rounded-lg bg-morandi-bg text-morandi-text text-sm resize-none focus:ring-1 focus:ring-morandi-primary outline-none resize-none overflow-hidden"
           />
         </div>
 
@@ -105,10 +106,10 @@
               </div>
               <textarea
                 :value="step.text"
-                @input="handleStepChange(step.id, ($event.target as HTMLTextAreaElement).value)"
+                @input="handleStepChange(step.id, $event.target as HTMLTextAreaElement)"
                 :placeholder="t('recipeForm.stepPlaceholder')"
                 rows="2"
-                class="flex-grow p-2 bg-morandi-bg/50 rounded-lg text-sm text-morandi-text focus:bg-white focus:ring-1 focus:ring-morandi-primary outline-none transition-colors"
+                class="flex-grow p-2 bg-morandi-bg/50 rounded-lg text-sm text-morandi-text focus:bg-white focus:ring-1 focus:ring-morandi-primary outline-none transition-colors resize-none overflow-hidden"
               />
               <button @click="removeStep(step.id)" class="text-gray-300 hover:text-red-400 self-start mt-2">
                 <Trash2 :size="16" />
@@ -145,7 +146,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, nextTick, onMounted } from 'vue';
 import { Camera, Plus, X, Clock, Trash2, Loader2 } from 'lucide-vue-next';
 import { Recipe, Category, Ingredient, Step } from '../types';
 import { compressImage, needsCompression, getImageSizeKB } from '../utils/imageCompress';
@@ -267,10 +268,18 @@ const handleAddStep = () => {
   steps.value.push({ id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, text: '' });
 };
 
-const handleStepChange = (id: string, text: string) => {
+const autoResizeTextarea = (textarea: HTMLTextAreaElement) => {
+  textarea.style.height = 'auto';
+  textarea.style.height = `${textarea.scrollHeight}px`;
+};
+
+const handleStepChange = (id: string, textarea: HTMLTextAreaElement) => {
   const index = steps.value.findIndex(s => s.id === id);
   if (index !== -1) {
-    steps.value[index].text = text;
+    steps.value[index].text = textarea.value;
+  }
+  if (textarea) {
+    autoResizeTextarea(textarea);
   }
 };
 
@@ -325,5 +334,15 @@ const handleSubmit = (e: Event) => {
     steps: filteredSteps
   });
 };
+
+// 初始化所有有内容的textarea高度
+onMounted(() => {
+  const textareas = document.querySelectorAll('textarea');
+  textareas.forEach(textarea => {
+    if (textarea.value.trim() !== '') {
+      autoResizeTextarea(textarea as HTMLTextAreaElement);
+    }
+  });
+});
 </script>
 
