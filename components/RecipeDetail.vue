@@ -84,7 +84,7 @@
       </div>
 
       <div class="prose prose-sm prose-stone max-w-none mb-8 text-center text-morandi-text/80">
-        <p>{{ recipe.description }}</p>
+        <p class="break-words">{{ recipe.description }}</p>
       </div>
 
       <!-- Ingredients Section -->
@@ -102,7 +102,7 @@
         <div class="bg-morandi-bg rounded-2xl p-5 space-y-3">
           <div v-for="ing in recipe.ingredients" :key="ing.id" class="flex items-start gap-3">
             <div class="mt-1 w-4 h-4 rounded-full border-2 border-morandi-border shrink-0" />
-            <span class="text-morandi-text font-medium">{{ ing.text }}</span>
+            <span class="text-morandi-text font-medium break-words min-w-0 flex-1">{{ ing.text }}</span>
           </div>
         </div>
       </div>
@@ -120,7 +120,7 @@
           <div v-for="(step, index) in recipe.steps" :key="step.id" class="relative pl-8 pb-2 border-l-2 border-morandi-border last:border-0">
             <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-morandi-secondary border-2 border-white shadow-sm" />
             <h3 class="text-xs font-bold text-morandi-primary uppercase mb-1 tracking-wide">{{ t('recipeDetail.step') }} {{ index + 1 }}</h3>
-            <p class="text-morandi-text leading-relaxed">{{ step.text }}</p>
+            <p class="text-morandi-text leading-relaxed break-words">{{ step.text }}</p>
           </div>
         </div>
       </div>
