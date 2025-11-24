@@ -51,9 +51,9 @@ const initialRecipe = computed<Recipe | null>(() => {
   return null;
 });
 
-const handleSave = (recipeData: Omit<Recipe, 'id' | 'createdAt'> & { id?: string; createdAt?: number }) => {
+const handleSave = async (recipeData: Omit<Recipe, 'id' | 'createdAt'> & { id?: string; createdAt?: number }) => {
   try {
-    saveRecipe(recipeData);
+    await saveRecipe(recipeData);
     
     if (recipeData.id) {
       router.push(`/recipe/${recipeData.id}`);

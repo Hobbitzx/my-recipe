@@ -33,13 +33,15 @@ const handleEdit = (recipe: any) => {
   router.push(`/recipe/${recipe.id}/edit`);
 };
 
-const handleDelete = (id: string) => {
-  deleteRecipe(id);
-  router.push('/');
+const handleDelete = async (id: string) => {
+  try {
+    await deleteRecipe(id);
+    router.push('/');
+  } catch (error) {
+    console.error('删除食谱失败:', error);
+  }
 };
 
-const handleBack = () => {
-  router.push('/');
-};
+const handleBack = () => router.push('/');
 </script>
 

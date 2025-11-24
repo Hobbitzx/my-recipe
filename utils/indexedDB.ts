@@ -47,7 +47,53 @@ export function openDB(): Promise<IDBDatabase> {
 }
 
 /**
- * 保存所有配方到 IndexedDB
+ * 序列化食谱（移除Vue响应式代理）
+ */
+function serializeRecipe(recipe: Recipe): Recipe {
+  return JSON.parse(JSON.stringify(recipe)) as Recipe;
+}
+
+/**
+ * 保存单个食谱到IndexedDB（新增或更新）
+ */
+export async function saveRecipeToDB(recipe: Recipe): Promise<void> {
+  try {
+    const db = await openDB();
+    const transaction = db.transaction([STORE_NAME], 'readwrite');
+    const store = transaction.objectStore(STORE_NAME);
+    const serialized = serializeRecipe(recipe);
+    
+    return new Promise<void>((resolve, reject) => {
+      const request = store.put(serialized); // put会自动判断是新增还是更新
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+  } catch (error) {
+    console.error('保存单个配方到 IndexedDB 失败:', error);
+    throw error;
+  }
+}
+
+/**
+ * 从IndexedDB删除单个食谱
+ */
+export async function deleteRecipeFromDB(id: string): Promise<void> {
+  try {
+    const db = await openDB();
+    const transaction = db.transaction([STORE_NAME], 'readwrite');
+    const store = transaction.objectStore(STORE_NAME);
+    return new Promise<void>((resolve, reject) => {
+      const request = store.delete(id);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+  } catch (error) {
+    console.error('从 IndexedDB 删除配方失败:', error);
+    throw error;
+  }
+}
+/**
+ * 保存所有配方到 IndexedDB（全量替换，用于迁移等场景）
  */
 export async function saveRecipes(recipes: Recipe[]): Promise<void> {
   try {
@@ -63,18 +109,16 @@ export async function saveRecipes(recipes: Recipe[]): Promise<void> {
     });
 
     // 批量添加新数据
-    // 需要深拷贝并序列化数据，移除 Vue 响应式代理
-    const promises = recipes.map(recipe => {
-      // 使用 JSON 序列化/反序列化来移除 Vue 响应式代理
-      const serializedRecipe = JSON.parse(JSON.stringify(recipe)) as Recipe;
+    const operations = recipes.map(recipe => {
+      const serialized = serializeRecipe(recipe);
       return new Promise<void>((resolve, reject) => {
-        const request = store.add(serializedRecipe);
+        const request = store.add(serialized);
         request.onsuccess = () => resolve();
         request.onerror = () => reject(request.error);
       });
     });
 
-    await Promise.all(promises);
+    await Promise.all(operations);
     console.log(`已保存 ${recipes.length} 个配方到 IndexedDB`);
   } catch (error) {
     console.error('保存配方到 IndexedDB 失败:', error);
