@@ -152,6 +152,7 @@ import { Camera, Plus, X, Clock, Trash2, Loader2 } from 'lucide-vue-next';
 import { Recipe, Category, Ingredient, Step } from '../types';
 import { compressImage, needsCompression, getImageSizeKB } from '../utils/imageCompress';
 import { useLanguage } from '../composables/useLanguage';
+import { getCategoryName } from '../composables/useCategory';
 
 interface Props {
   initialRecipe?: Recipe | null;
@@ -185,21 +186,6 @@ const steps = ref<Step[]>(
 );
 
 const categories = computed(() => Object.values(Category).filter(c => c !== 'All'));
-
-const categoryMap: Record<string, string> = {
-  [Category.QUICK_BREAKFAST]: 'categories.quickBreakfast',
-  [Category.COLD_DISHES]: 'categories.coldDishes',
-  [Category.MEAT_MAIN]: 'categories.meatMain',
-  [Category.RICE_NOODLES]: 'categories.riceNoodles',
-  [Category.SOUP]: 'categories.soup',
-  [Category.VEGETABLE_STIR]: 'categories.vegetableStir',
-  [Category.DESSERT]: 'categories.dessert',
-  [Category.DRINKS]: 'categories.drinks',
-};
-
-const getCategoryName = (cat: Category) => {
-  return t(categoryMap[cat] || cat);
-};
 
 const handleImageUpload = async (e: Event) => {
   const target = e.target as HTMLInputElement;

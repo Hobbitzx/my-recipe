@@ -131,8 +131,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Clock, Edit2, Trash2, CheckCircle2, ChefHat, ArrowLeft } from 'lucide-vue-next';
-import { Recipe, Category } from '../types';
+import { Recipe } from '../types';
 import { useLanguage } from '../composables/useLanguage';
+import { getCategoryName } from '../composables/useCategory';
 
 interface Props {
   recipe: Recipe;
@@ -157,21 +158,6 @@ const handleDeleteClick = (e: MouseEvent) => {
 const confirmDelete = () => {
   emit('delete', props.recipe.id);
   showDeleteConfirm.value = false;
-};
-
-const categoryMap: Record<string, string> = {
-  [Category.QUICK_BREAKFAST]: 'categories.quickBreakfast',
-  [Category.COLD_DISHES]: 'categories.coldDishes',
-  [Category.MEAT_MAIN]: 'categories.meatMain',
-  [Category.RICE_NOODLES]: 'categories.riceNoodles',
-  [Category.SOUP]: 'categories.soup',
-  [Category.VEGETABLE_STIR]: 'categories.vegetableStir',
-  [Category.DESSERT]: 'categories.dessert',
-  [Category.DRINKS]: 'categories.drinks',
-};
-
-const getCategoryName = (cat: Category) => {
-  return t(categoryMap[cat] || cat);
 };
 </script>
 

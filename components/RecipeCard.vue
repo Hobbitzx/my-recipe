@@ -19,7 +19,7 @@
     <div class="p-3 flex flex-col flex-grow">
       <div class="mb-1">
         <span class="text-[10px] font-bold uppercase tracking-wider text-morandi-primary bg-morandi-primary/10 px-1.5 py-0.5 rounded">
-          {{ recipe.category }}
+          {{ getCategoryName(recipe.category) }}
         </span>
       </div>
       <h3 class="font-semibold text-morandi-text text-sm leading-tight mb-1 line-clamp-2">
@@ -36,6 +36,7 @@
 import { Clock } from 'lucide-vue-next';
 import { Recipe } from '../types';
 import { useLanguage } from '../composables/useLanguage';
+import { getCategoryName } from '../composables/useCategory';
 
 interface Props {
   recipe: Recipe;

@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { Category } from '../types';
-import { useLanguage } from '../composables/useLanguage';
+import { getCategoryName } from '../composables/useCategory';
 
 interface Props {
   selectedCategory: Category | 'All';
@@ -27,30 +27,12 @@ interface Props {
 
 const props = defineProps<Props>();
 defineEmits<{
-  select: [category: Category | 'All'];
+  select: [category: Category | 'All' | string];
 }>();
-
-const { t } = useLanguage();
 
 const categories = computed(() => [
   'All',
   ...Object.values(Category).filter(c => c !== Category.ALL)
 ]);
-
-const categoryMap: Record<string, string> = {
-  'All': 'categories.all',
-  [Category.QUICK_BREAKFAST]: 'categories.quickBreakfast',
-  [Category.COLD_DISHES]: 'categories.coldDishes',
-  [Category.MEAT_MAIN]: 'categories.meatMain',
-  [Category.RICE_NOODLES]: 'categories.riceNoodles',
-  [Category.SOUP]: 'categories.soup',
-  [Category.VEGETABLE_STIR]: 'categories.vegetableStir',
-  [Category.DESSERT]: 'categories.dessert',
-  [Category.DRINKS]: 'categories.drinks',
-};
-
-const getCategoryName = (cat: string) => {
-  return t(categoryMap[cat] || cat);
-};
 </script>
 
