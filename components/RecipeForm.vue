@@ -2,7 +2,7 @@
   <div class="pb-24 bg-morandi-bg min-h-full">
     <!-- Image Upload Section -->
     <div 
-      class="relative w-full h-64 bg-gray-200 flex items-center justify-center overflow-hidden cursor-pointer group"
+      class="relative w-full bg-gray-200 flex items-center justify-center overflow-hidden cursor-pointer group aspect-4-3"
       @click="!isCompressing && fileInputRef?.click()"
     >
       <div v-if="isCompressing" class="flex flex-col items-center text-morandi-primary">

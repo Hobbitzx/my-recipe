@@ -45,7 +45,7 @@ export const zhCN = {
     addStep: '添加步骤',
     stepPlaceholder: '描述这个步骤...',
     saveRecipe: '保存食谱',
-    addCoverPhoto: '添加封面照片',
+    addCoverPhoto: '添加封面图片，建议宽高比为4:3',
     compressing: '正在压缩图片...',
   },
 

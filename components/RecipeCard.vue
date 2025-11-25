@@ -3,7 +3,7 @@
     @click="$emit('click', recipe)"
     class="bg-morandi-surface rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 active:scale-95 cursor-pointer flex flex-col h-full"
   >
-    <div class="relative h-32 w-full overflow-hidden bg-gray-200">
+    <div class="relative w-full overflow-hidden bg-gray-200 aspect-4-3">
       <img 
         :src="recipe.image" 
         :alt="recipe.title" 

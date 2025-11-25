@@ -45,7 +45,7 @@ export const enUS = {
     addStep: 'Add Step',
     stepPlaceholder: 'Describe this step...',
     saveRecipe: 'Save Recipe',
-    addCoverPhoto: 'Add Cover Photo',
+    addCoverPhoto: 'Add Cover Photo, recommended aspect ratio 4:3',
     compressing: 'Compressing image...',
   },
 
