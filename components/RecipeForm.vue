@@ -126,23 +126,6 @@
             <Plus :size="16" /> {{ t('recipeForm.addStep') }}
           </button>
         </div>
-
-        <!-- Action Buttons -->
-        <div class="pt-4 flex gap-4">
-          <button 
-            @click="$emit('cancel')"
-            class="flex-1 py-3 rounded-xl font-semibold text-morandi-text bg-morandi-bg hover:bg-gray-200 transition-colors"
-          >
-            {{ t('common.cancel') }}
-          </button>
-          <button 
-            @click="handleSubmit"
-            class="flex-1 py-3 rounded-xl font-semibold text-white bg-morandi-primary hover:opacity-90 transition-opacity shadow-md shadow-morandi-primary/30"
-          >
-            {{ t('recipeForm.saveRecipe') }}
-          </button>
-        </div>
-
       </div>
     </div>
   </div>
@@ -313,8 +296,10 @@ const removeStep = (id: string) => {
   }
 };
 
-const handleSubmit = (e: Event) => {
+const handleSubmit = (e?: Event) => {
+  if (e) {
   e.preventDefault();
+  }
   
   if (!title.value.trim()) {
     const titleInput = document.querySelector(`input[placeholder="${t('recipeForm.recipeTitle')}"]`) as HTMLInputElement;
@@ -358,6 +343,10 @@ const handleSubmit = (e: Event) => {
     steps: filteredSteps
   });
 };
+
+defineExpose({
+  submit: handleSubmit
+})
 
 // 初始化所有有内容的textarea高度
 onMounted(() => {
