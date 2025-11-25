@@ -1,5 +1,5 @@
 <template>
-  <div class="pb-24 bg-morandi-bg min-h-full">
+  <div class="pb-6 bg-morandi-bg min-h-full">
     <!-- Image Upload Section -->
     <div 
       class="relative w-full bg-gray-200 flex items-center justify-center overflow-hidden cursor-pointer group aspect-4-3"
@@ -26,7 +26,7 @@
     </div>
 
     <div class="px-6 -mt-6 relative z-10">
-      <div class="bg-morandi-surface rounded-t-3xl shadow-lg p-6 space-y-6">
+      <div class="bg-morandi-surface rounded-3xl shadow-lg p-6 space-y-6">
         
         <!-- Basic Info -->
         <div class="space-y-4">
