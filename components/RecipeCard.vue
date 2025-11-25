@@ -12,7 +12,7 @@
       />
       <div class="absolute bottom-2 right-2 bg-white/80 backdrop-blur-md px-2 py-0.5 rounded-lg text-xs font-medium text-morandi-text flex items-center gap-1 shadow-sm">
         <Clock :size="12" />
-        {{ recipe.prepTime }}
+        {{ recipe.prepTime }} {{ t('recipeForm.timeUnit') }}
       </div>
     </div>
     
@@ -35,6 +35,7 @@
 <script setup lang="ts">
 import { Clock } from 'lucide-vue-next';
 import { Recipe } from '../types';
+import { useLanguage } from '../composables/useLanguage';
 
 interface Props {
   recipe: Recipe;
@@ -44,5 +45,7 @@ defineProps<Props>();
 defineEmits<{
   click: [recipe: Recipe];
 }>();
+
+const { t } = useLanguage();
 </script>
 

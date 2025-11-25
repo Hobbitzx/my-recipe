@@ -79,7 +79,7 @@
         <h1 class="text-3xl font-serif font-bold text-morandi-text mb-2">{{ recipe.title }}</h1>
         <div class="flex items-center text-morandi-subtext text-sm font-medium gap-2">
           <Clock :size="16" />
-          <span>{{ recipe.prepTime }}</span>
+          <span>{{ recipe.prepTime }} {{ t('recipeForm.timeUnit') }}</span>
         </div>
       </div>
 

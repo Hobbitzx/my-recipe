@@ -49,14 +49,15 @@
             </div>
             <div class="flex-1">
               <label class="block text-xs font-bold text-morandi-subtext uppercase mb-1 tracking-wider">{{ t('recipeForm.time') }}</label>
-              <div class="relative">
-                <Clock :size="16" class="absolute left-2.5 top-2.5 text-morandi-accent" />
+              <div class="relative flex items-center">
+                <Clock :size="16" class="absolute left-2.5 top-2.5 text-morandi-accent z-10" />
                 <input 
                   type="text" 
                   v-model="prepTime"
                   :placeholder="t('recipeForm.timePlaceholder')"
-                  class="w-full p-2 pl-9 rounded-lg bg-morandi-bg text-morandi-text text-sm border-none focus:ring-1 focus:ring-morandi-primary outline-none"
+                  class="w-full p-2 pl-9 pr-12 rounded-lg bg-morandi-bg text-morandi-text text-sm border-none focus:ring-1 focus:ring-morandi-primary outline-none"
                 />
+                <span class="absolute right-3 text-morandi-subtext text-sm pointer-events-none">{{ t('recipeForm.timeUnit') }}</span>
               </div>
             </div>
           </div>
@@ -332,7 +333,7 @@ const handleSubmit = (e: Event) => {
     description: description.value,
     category: category.value,
     image: image.value || defaultImage,
-    prepTime: prepTime.value || '15 min',
+    prepTime: prepTime.value || '10',
     ingredients: filteredIngredients,
     steps: filteredSteps
   });
