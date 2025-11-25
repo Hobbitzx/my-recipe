@@ -84,7 +84,9 @@
       </div>
 
       <div class="prose prose-sm prose-stone max-w-none mb-8 text-center text-morandi-text/80">
-        <p class="break-words">{{ recipe.description }}</p>
+        <p class="break-words">
+          <AutoLink :text="recipe.description" />
+        </p>
       </div>
 
       <!-- Ingredients Section -->
@@ -134,6 +136,7 @@ import { Clock, Edit2, Trash2, CheckCircle2, ChefHat, ArrowLeft } from 'lucide-v
 import { Recipe } from '../types';
 import { useLanguage } from '../composables/useLanguage';
 import { getCategoryName } from '../composables/useCategory';
+import AutoLink from './AutoLink.vue'
 
 interface Props {
   recipe: Recipe;
