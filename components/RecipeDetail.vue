@@ -37,7 +37,7 @@
     </div>
 
     <!-- Custom Sticky Header for Image -->
-    <div class="relative w-full shrink-0 aspect-4-3">
+    <div class="relative w-full shrink-0 overflow-hidden aspect-4-3">
       <img 
         :src="recipe.image" 
         :alt="recipe.title" 
