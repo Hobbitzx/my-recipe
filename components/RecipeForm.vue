@@ -78,6 +78,7 @@
             <div v-for="ing in ingredients" :key="ing.id" class="flex gap-2 items-center animate-fade-in">
               <div class="w-1.5 h-1.5 rounded-full bg-morandi-secondary flex-shrink-0" />
               <input
+                :ref="el => setIngredientInputRef(el, ing.id)"
                 type="text"
                 :value="ing.text"
                 @input="handleIngredientChange(ing.id, ($event.target as HTMLInputElement).value)"
@@ -106,6 +107,7 @@
                 {{ index + 1 }}
               </div>
               <textarea
+                :ref="el => setStepInputRef(el, step.id)"
                 :value="step.text"
                 @input="handleStepChange(step.id, $event.target as HTMLTextAreaElement)"
                 :placeholder="t('recipeForm.stepPlaceholder')"
@@ -147,7 +149,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, nextTick } from 'vue';
 import { Camera, Plus, X, Clock, Trash2, Loader2 } from 'lucide-vue-next';
 import { Recipe, Category, Ingredient, Step } from '../types';
 import { compressImage, needsCompression, getImageSizeKB } from '../utils/imageCompress';
@@ -166,6 +168,8 @@ const emit = defineEmits<{
 
 const { t } = useLanguage();
 const fileInputRef = ref<HTMLInputElement | null>(null);
+const ingredientInputRefs = ref<Record<string, HTMLInputElement | null>>({});
+const stepInputRefs = ref<Record<string, HTMLTextAreaElement | null>>({});
 
 // 缺省图片路径 - 使用 public 文件夹，路径固定不会被 hash
 const defaultImage = `${import.meta.env.BASE_URL}default-recipe-image.jpg`
@@ -237,8 +241,31 @@ const handleImageUpload = async (e: Event) => {
   }
 };
 
-const handleAddIngredient = () => {
-  ingredients.value.push({ id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, text: '' });
+const setIngredientInputRef = (el: HTMLInputElement | null, id: string) => {
+  if (el) {
+    ingredientInputRefs.value[id] = el;
+  } else {
+    delete ingredientInputRefs.value[id];
+  }
+};
+
+const setStepInputRef = (el: HTMLTextAreaElement | null, id: string) => {
+  if (el) {
+    stepInputRefs.value[id] = el;
+  } else {
+    delete stepInputRefs.value[id];
+  }
+};
+
+const handleAddIngredient = async () => {
+  const newId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`; 
+  ingredients.value.push({ id: newId, text: '' });
+  // 等待DOM更新后聚焦到新添加的输入框
+  await nextTick();
+  const newInput = ingredientInputRefs.value[newId];
+  if (newInput) {
+    newInput.focus();
+  }
 };
 
 const handleIngredientChange = (id: string, text: string) => {
@@ -254,8 +281,15 @@ const removeIngredient = (id: string) => {
   }
 };
 
-const handleAddStep = () => {
-  steps.value.push({ id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, text: '' });
+const handleAddStep = async () => {
+  const newId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  steps.value.push({ id: newId, text: '' });
+  // 等到DOM更新后聚焦到新添加的输入框
+  await nextTick();
+  const newInput = stepInputRefs.value[newId];
+  if (newInput) {
+    newInput.focus();
+  }
 };
 
 const autoResizeTextarea = (textarea: HTMLTextAreaElement) => {
