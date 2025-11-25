@@ -74,10 +74,10 @@ const initialRecipe = computed<Recipe | null>(() => {
 
 const handleSave = async (recipeData: Omit<Recipe, 'id' | 'createdAt'> & { id?: string; createdAt?: number }) => {
   try {
-    await saveRecipe(recipeData);
+    const recipeId = await saveRecipe(recipeData);
     
-    if (recipeData.id) {
-      router.push(`/recipe/${recipeData.id}`);
+    if (recipeId) {
+      router.push(`/recipe/${recipeId}`);
     } else {
       router.push('/');
     }

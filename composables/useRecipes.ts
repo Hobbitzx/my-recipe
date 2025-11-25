@@ -179,6 +179,7 @@ export function useRecipes() {
     try {
       // 保存到数据库
       await saveToStorage(recipe);
+      return recipe.id;
     } catch (error) {
       // 数据库保存失败，回滚内存状态
       if (isNewRecipe) {
