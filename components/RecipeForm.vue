@@ -74,11 +74,23 @@
         <!-- Ingredients -->
         <div>
           <h3 class="text-lg font-semibold text-morandi-text mb-3">{{ t('recipeForm.ingredients') }}</h3>
-          <div class="space-y-2">
+          <VueDraggableNext
+            v-model="ingredients"
+            item-key="id"
+            handle=".drag-handle"
+            class="space-y-2"
+            :animation="200"
+            ghost-class="drag-ghost"
+            chosen-class="drag-chosen"
+            drag-class="drag-dragging"
+          >
             <div v-for="ing in ingredients" :key="ing.id" class="flex gap-2 items-center animate-fade-in">
+              <button class="drag-handle text-gray-400 hover:text-morandi-primary cursor-move flex-shrink-0" type="button">
+                <GripVertical :size="18" />
+              </button>
               <div class="w-1.5 h-1.5 rounded-full bg-morandi-secondary flex-shrink-0" />
               <input
-                :ref="el => setIngredientInputRef(el, ing.id)"
+                :ref="el => setIngredientInputRef(el as HTMLInputElement, ing.id)"
                 type="text"
                 :value="ing.text"
                 @input="handleIngredientChange(ing.id, ($event.target as HTMLInputElement).value)"
@@ -89,7 +101,7 @@
                 <X :size="18" />
               </button>
             </div>
-          </div>
+          </VueDraggableNext>
           <button 
             @click="handleAddIngredient"
             class="mt-3 text-sm font-medium text-morandi-primary hover:text-morandi-text flex items-center gap-1"
@@ -101,8 +113,20 @@
         <!-- Steps -->
         <div>
           <h3 class="text-lg font-semibold text-morandi-text mb-3">{{ t('recipeForm.instructions') }}</h3>
-          <div class="space-y-4">
+          <VueDraggableNext
+            v-model="steps"
+            item-key="id"
+            handle=".drag-handle"
+            class="space-y-2"
+            :animation="200"
+            ghost-class="drag-ghost"
+            chosen-class="drag-chosen"
+            drag-class="drag-dragging"
+          >
             <div v-for="(step, index) in steps" :key="step.id" class="flex gap-3 animate-fade-in">
+              <button class="drag-handle text-gray-400 hover:text-morandi-primary cursor-move flex-shrink-0 self-start mt-2" type="button">
+                <GripVertical :size="18" />
+              </button>
               <div class="flex-shrink-0 w-6 h-6 rounded-full bg-morandi-secondary/50 text-morandi-text text-xs font-bold flex items-center justify-center mt-1">
                 {{ index + 1 }}
               </div>
@@ -118,7 +142,7 @@
                 <Trash2 :size="16" />
               </button>
             </div>
-          </div>
+          </VueDraggableNext>
           <button 
             @click="handleAddStep"
             class="mt-3 text-sm font-medium text-morandi-primary hover:text-morandi-text flex items-center gap-1"
@@ -133,11 +157,12 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick } from 'vue';
-import { Camera, Plus, X, Clock, Trash2, Loader2 } from 'lucide-vue-next';
+import { Camera, Plus, X, Clock, Trash2, Loader2, GripVertical } from 'lucide-vue-next';
 import { Recipe, Category, Ingredient, Step } from '../types';
 import { compressImage, needsCompression, getImageSizeKB } from '../utils/imageCompress';
 import { useLanguage } from '../composables/useLanguage';
 import { getCategoryName } from '../composables/useCategory';
+import { VueDraggableNext } from 'vue-draggable-next';
 
 interface Props {
   initialRecipe?: Recipe | null;
@@ -359,3 +384,46 @@ onMounted(() => {
 });
 </script>
 
+<style scoped>
+.drag-ghost {
+  opacity: 0.4;
+  background: linear-gradient(135deg, rgba(139, 139, 139, 0.15) 0%, rgba(139, 139, 139, 0.05) 100%) !important;
+  border: 2px dashed rgba(139, 139, 139, 0.6) !important;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: scale(0.95);
+}
+.drag-chosen {
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(139, 139, 139, 0.3);
+  background: rgba(255, 255, 255, 0.9) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+  position: relative;
+}
+.drag-dragging {
+  transform: scale(1.08) rotate(1deg);
+  opacity: 0.9;
+  box-shadow: 0 12px 32px rgba(139, 139, 139, 0.4);
+  background: rgba(255, 255, 255, 0.95) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1001;
+  position: relative;
+}
+
+/* 平滑的拖拽过渡效果 */
+.space-y-2 > *,
+.space-y-4 > * {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s ease,
+              box-shadow 0.3s ease,
+              background 0.3s ease;
+  will-change: transform, opacity;
+}
+
+/* 拖拽手柄悬停效果增强 */
+.drag-handle:hover {
+  transform: scale(1.1);
+  transition: transform 0.2s ease;
+}
+</style>
