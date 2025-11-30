@@ -10,11 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "linkify-it": "^5.0.0",
     "lucide-vue-next": "^0.300.0",
     "vue": "^3.4.0",
     "vue-router": "^4.6.3",
-    "linkify-it": "^5.0.0",
-    "vue-draggable-next": "^2.3.0"
+    "vue3-smooth-dnd": "^0.0.6"
   },
   "devDependencies": {
     "@types/linkify-it": "^5.0.0",
