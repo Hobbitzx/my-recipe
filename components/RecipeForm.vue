@@ -184,11 +184,15 @@ const prepTime = ref(props.initialRecipe?.prepTime || '');
 const isCompressing = ref(false);
 
 const ingredients = ref<Ingredient[]>(
-  props.initialRecipe?.ingredients || [{ id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, text: '' }]
+  props.initialRecipe?.ingredients
+    ? JSON.parse(JSON.stringify(props.initialRecipe.ingredients))
+    : [{ id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, text: '' }]
 );
 
 const steps = ref<Step[]>(
-  props.initialRecipe?.steps || [{ id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, text: '' }]
+  props.initialRecipe?.steps
+    ? JSON.parse(JSON.stringify(props.initialRecipe.steps))
+    : [{ id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, text: '' }]
 );
 
 const categories = computed(() => Object.values(Category).filter(c => c !== 'All'));
