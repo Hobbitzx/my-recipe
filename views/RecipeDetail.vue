@@ -36,12 +36,12 @@ const handleEdit = (recipe: any) => {
 const handleDelete = async (id: string) => {
   try {
     await deleteRecipe(id);
-    router.push('/');
+    router.back();
   } catch (error) {
     console.error('删除食谱失败:', error);
   }
 };
 
-const handleBack = () => router.push('/');
+const handleBack = () => router.back();
 </script>
 

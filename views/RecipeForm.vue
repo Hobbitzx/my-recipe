@@ -77,22 +77,21 @@ const handleSave = async (recipeData: Omit<Recipe, 'id' | 'createdAt'> & { id?: 
     const recipeId = await saveRecipe(recipeData);
     
     if (recipeId) {
-      router.push(`/recipe/${recipeId}`);
+      if (isEdit.value) {
+        router.back();
+      } else {
+        router.replace(`/recipe/${recipeId}`);
+      }
     } else {
-      router.push('/');
+      console.error('No id returned from saveRecipe');
     }
   } catch (error) {
     console.error('Error saving recipe:', error);
-    router.push('/');
   }
 };
 
 const handleBack = () => {
-  if (isEdit.value && recipeId.value) {
-    router.push(`/recipe/${recipeId.value}`);
-  } else {
-    router.push('/');
-  }
+  router.go(-1);
 };
 
 const handleSaveClick = () => {
