@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full max-w-md mx-auto bg-morandi-bg min-h-screen shadow-2xl overflow-hidden relative">
+  <div class="w-full max-w-md mx-auto bg-morandi-bg shadow-2xl overflow-hidden relative flex flex-col" style="height: 100vh;">
     <Header 
       :title="isEdit ? t('recipeForm.editRecipe') : t('recipeForm.newRecipe')" 
       :on-back="handleBack"
@@ -21,7 +21,7 @@
         </div>
       </template>
     </Header>
-    <div class="pt-14">
+    <div id="form-scroll-container" class="flex-1 overflow-y-auto pt-14">
       <RecipeForm
         ref="recipeFormRef"
         :initial-recipe="initialRecipe"

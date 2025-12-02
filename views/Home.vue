@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full max-w-md mx-auto bg-morandi-bg min-h-screen shadow-2xl overflow-hidden relative flex flex-col">
+  <div class="w-full max-w-md mx-auto bg-morandi-bg shadow-2xl overflow-hidden relative flex flex-col" style="height: 100vh;">
     <!-- Top Bar -->
     <div class="bg-morandi-bg pt-4 px-4 pb-2">
       <div class="flex justify-between items-center mb-4">
@@ -36,7 +36,7 @@
     <CategoryFilter :selected-category="selectedCategory" @select="selectedCategory = $event" />
 
     <!-- Recipe Grid -->
-    <div class="flex-1 overflow-y-auto no-scrollbar p-4 pb-24">
+    <div id="home-scroll-container" class="flex-1 overflow-y-auto no-scrollbar p-4 pb-24">
       <div v-if="filteredRecipes.length === 0" class="flex flex-col items-center justify-center h-64 text-morandi-subtext opacity-60">
         <ChefHat :size="48" class="mb-2" />
         <p>{{ t('home.noRecipes') }}</p>
@@ -63,7 +63,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import { Search, Plus, ChefHat, Download } from 'lucide-vue-next';
 import { Recipe, Category } from '../types';
@@ -81,7 +81,27 @@ const searchQuery = ref('');
 const selectedCategory = ref<Category | 'All'>('All');
 const installPrompt = ref<any>(null);
 
-// PWA 安装提示
+// 恢复滚动位置
+function restoreScrollPosition() {
+  const saved = sessionStorage.getItem('scroll-Home')
+  if (saved) {
+    const scrollTop = parseInt(saved, 10);
+    if (scrollTop > 0) {
+      nextTick(() => {
+        nextTick(() => {
+          const container = document.getElementById('home-scroll-container');
+          if (container) {
+            // 使用requestAnimationFrame确保在下一帧设置，避免闪动
+            requestAnimationFrame(() => {
+              container.scrollTop = scrollTop;
+            })
+          }
+        })
+      })
+    }
+  }
+}
+// PWA 安装提示和恢复滚动位置
 onMounted(() => {
   const handler = (e: any) => {
     e.preventDefault();
@@ -92,6 +112,9 @@ onMounted(() => {
   onUnmounted(() => {
     window.removeEventListener('beforeinstallprompt', handler);
   });
+
+  // 恢复滚动位置
+  restoreScrollPosition();
 });
 
 const handleInstall = () => {

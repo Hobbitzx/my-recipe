@@ -1,14 +1,16 @@
 <template>
-  <div class="w-full max-w-md mx-auto bg-morandi-surface min-h-screen shadow-2xl overflow-hidden relative">
-    <div v-if="recipe">
-      <RecipeDetailComponent 
-        :recipe="recipe"
-        @edit="handleEdit"
-        @delete="handleDelete"
-        @back="handleBack"
-      />
+  <div class="w-full max-w-md mx-auto bg-morandi-surface shadow-2xl overflow-hidden relative flex flex-col" style="height: 100vh;">
+    <div v-if="recipe" class="flex flex-col h-full">
+      <div id="detail-scroll-container" class="flex-1 overflow-y-auto">
+        <RecipeDetailComponent 
+          :recipe="recipe"
+          @edit="handleEdit"
+          @delete="handleDelete"
+          @back="handleBack"
+        />
+      </div>
     </div>
-    <div v-else class="min-h-screen flex items-center justify-center">
+    <div v-else class="flex-1 flex items-center justify-center">
       <p class="text-morandi-subtext">食谱不存在</p>
     </div>
   </div>
