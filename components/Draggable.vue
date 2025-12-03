@@ -5,7 +5,6 @@
       :drag-handle-selector="handle"
       lock-axis="y"
       @drop="onDrop"
-      @drag-end="releaseTouchScroll"
       :drag-begin-delay="180"
     >
       <Draggable 
@@ -54,9 +53,9 @@ const releaseTouchScroll = () => {
 };
 
 const onDrop = (dropResult: any) => {
-  releaseTouchScroll();
   const newItems = applyDrag(props.items, dropResult);
   emit('update:items', newItems);
+  releaseTouchScroll();
 };
 
 const applyDrag = (arr: any[], dragResult: any) => {
