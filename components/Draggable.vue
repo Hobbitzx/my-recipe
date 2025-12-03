@@ -55,7 +55,7 @@ const releaseTouchScroll = () => {
 const onDrop = (dropResult: any) => {
   const newItems = applyDrag(props.items, dropResult);
   emit('update:items', newItems);
-  releaseTouchScroll();
+  // releaseTouchScroll();
 };
 
 const applyDrag = (arr: any[], dragResult: any) => {
@@ -75,6 +75,6 @@ const applyDrag = (arr: any[], dragResult: any) => {
 };
 
 onBeforeUnmount(() => {
-  releaseTouchScroll();
+  // releaseTouchScroll();
 });
 </script>
