@@ -5,7 +5,6 @@
       :drag-handle-selector="handle"
       lock-axis="y"
       @drop="onDrop"
-      :drag-begin-delay="180"
     >
       <Draggable 
         v-for="(item, i) in items" 
@@ -50,6 +49,7 @@ const getItemId = (item: any, index: number) => {
 const releaseTouchScroll = () => {
   if (typeof document === 'undefined') return;
   document.body.classList.remove('smooth-dnd-disable-touch-action');
+  document.body.classList.remove('smooth-dnd-no-user-select')
 };
 
 const onDrop = (dropResult: any) => {
