@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div @touchend="fixActionRestriction">
     <Container
       orientation="vertical"
       :drag-handle-selector="handle"
@@ -17,7 +17,6 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount } from 'vue';
 import { Container, Draggable } from "vue3-smooth-dnd";
 
 interface Props {
@@ -46,16 +45,14 @@ const getItemId = (item: any, index: number) => {
   return item?.id ?? item?.key ?? index;
 };
 
-const releaseTouchScroll = () => {
+const fixActionRestriction = () => {
   if (typeof document === 'undefined') return;
-  document.body.classList.remove('smooth-dnd-disable-touch-action');
-  document.body.classList.remove('smooth-dnd-no-user-select')
+  document.body.classList.remove('smooth-dnd-disable-touch-action', 'smooth-dnd-no-user-select');
 };
 
 const onDrop = (dropResult: any) => {
   const newItems = applyDrag(props.items, dropResult);
   emit('update:items', newItems);
-  // releaseTouchScroll();
 };
 
 const applyDrag = (arr: any[], dragResult: any) => {
@@ -73,8 +70,4 @@ const applyDrag = (arr: any[], dragResult: any) => {
   }
   return result;
 };
-
-onBeforeUnmount(() => {
-  // releaseTouchScroll();
-});
 </script>
